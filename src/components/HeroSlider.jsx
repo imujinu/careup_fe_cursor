@@ -5,24 +5,40 @@ const slides = [
     title: "Performance Running",
     sub: "가벼운 착용감과 통기성으로 더 멀리",
     image:
+<<<<<<< HEAD
       "https://images.unsplash.com/photo-1521417531039-96c46f2c0bd9?q=80&w=1600&auto=format&fit=crop",
+=======
+      "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=1600&q=80",
+>>>>>>> 6584656 (change)
   },
   {
     title: "Training Essentials",
     sub: "탄탄한 지지력으로 집중력 UP",
     image:
+<<<<<<< HEAD
       "https://images.unsplash.com/photo-1599050751795-5cda89f0f4fb?q=80&w=1600&auto=format&fit=crop",
+=======
+      "https://images.unsplash.com/photo-1517963879433-6ad2b056d712?auto=format&fit=crop&w=1600&q=80",
+>>>>>>> 6584656 (change)
   },
   {
     title: "Outdoor & Trail",
     sub: "거친 길에서도 흔들림 없는 퍼포먼스",
     image:
+<<<<<<< HEAD
       "https://images.unsplash.com/photo-1549576490-b0b4831ef60a?q=80&w=1600&auto=format&fit=crop",
+=======
+      "https://images.unsplash.com/photo-1549576490-b0b4831ef60a?auto=format&fit=crop&w=1600&q=80",
+>>>>>>> 6584656 (change)
   },
 ];
 
 export default function HeroSlider() {
   const [index, setIndex] = useState(0);
+<<<<<<< HEAD
+=======
+  const [lightText, setLightText] = useState(true);
+>>>>>>> 6584656 (change)
   useEffect(() => {
     const id = setInterval(
       () => setIndex((i) => (i + 1) % slides.length),
@@ -30,11 +46,50 @@ export default function HeroSlider() {
     );
     return () => clearInterval(id);
   }, []);
+<<<<<<< HEAD
+=======
+  // 현재 슬라이드 이미지의 평균 밝기를 추정해 텍스트 색을 결정
+  useEffect(() => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      try {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        const w = 12;
+        const h = 12;
+        canvas.width = w;
+        canvas.height = h;
+        ctx.drawImage(img, 0, 0, w, h);
+        const { data } = ctx.getImageData(0, 0, w, h);
+        let avg = 0;
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          avg += 0.2126 * r + 0.7152 * g + 0.0722 * b;
+        }
+        avg = avg / (data.length / 4);
+        setLightText(avg < 160);
+      } catch (e) {
+        setLightText(true);
+      }
+    };
+    img.src = slides[index].image;
+  }, [index]);
+>>>>>>> 6584656 (change)
   const s = slides[index];
   return (
     <div
       className="hero-slide"
+<<<<<<< HEAD
       style={{ background: `url(${s.image}) center/cover no-repeat` }}
+=======
+      style={{
+        background: `url(${s.image}) center/cover no-repeat`,
+      }}
+>>>>>>> 6584656 (change)
     >
       <div className="hero-media" aria-hidden="true" />
       <button
@@ -56,11 +111,18 @@ export default function HeroSlider() {
         ‹
       </button>
       <div
+<<<<<<< HEAD
         style={{
           maxWidth: 460,
           background: "rgba(255,255,255,0.85)",
           padding: 20,
           borderRadius: 12,
+=======
+        className="hero-copy"
+        style={{
+          color: lightText ? "#ffffff" : "#111111",
+          textShadow: lightText ? "0 2px 10px rgba(0,0,0,0.35)" : "none",
+>>>>>>> 6584656 (change)
         }}
       >
         <div className="hero-title">{s.title}</div>
