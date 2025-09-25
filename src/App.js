@@ -1,14 +1,21 @@
 import SharkLogo from "./components/SharkLogo";
 import HeroSlider from "./components/HeroSlider";
+import ProductDetail from "./components/ProductDetail";
+import LoginPage from "./components/LoginPage";
+import MyPage from "./components/MyPage";
+import ProductsPage from "./components/ProductsPage";
+import SalesOverview from "./components/admin/SalesOverview";
+import SalesDetail from "./components/admin/SalesDetail";
 import { useMemo, useState, useEffect } from "react";
 
 function App() {
   const [activeTab, setActiveTab] = useState("전체");
-  const [page, setPage] = useState("home"); // home | category
+  const [page, setPage] = useState("home"); // home | category | products | login | mypage | admin-sales | admin-sales-detail
   const [activeCategoryPage, setActiveCategoryPage] = useState("의류");
   const [favorites, setFavorites] = useState(new Set());
   const [detailProduct, setDetailProduct] = useState(null);
   const [checkoutProduct, setCheckoutProduct] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const toggleFavorite = (id) => {
     setFavorites((prev) => {
       const next = new Set(prev);
@@ -27,10 +34,41 @@ function App() {
         <div className="container">
           <div className="header-top">
             <a href="#">고객센터</a>
-            <a href="#">마이페이지</a>
+            {!isLoggedIn ? (
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setPage("mypage");
+                }}
+              >
+                마이페이지
+              </a>
+            ) : (
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setPage("login");
+                }}
+              >
+                로그인
+              </a>
+            )}
             <a href="#">관심</a>
             <a href="#">알림</a>
-            <a href="#">로그인</a>
+            {isLoggedIn && (
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsLoggedIn(false);
+                  setPage("home");
+                }}
+              >
+                로그아웃
+              </a>
+            )}
           </div>
           <div className="header-main">
             <div
@@ -53,7 +91,7 @@ function App() {
             <nav className="nav">
               <a
                 href="#"
-                className="active"
+                className={page === "home" ? "active" : ""}
                 onClick={(e) => {
                   e.preventDefault();
                   setDetailProduct(null);
@@ -63,8 +101,39 @@ function App() {
               >
                 HOME
               </a>
-              <a href="#" onClick={(e) => e.preventDefault()}>
+              <a
+                href="#"
+                className={page === "products" ? "active" : ""}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setDetailProduct(null);
+                  setCheckoutProduct(null);
+                  setPage("products");
+                }}
+              >
                 SHOP
+              </a>
+              <a
+                href="#"
+                className={page.startsWith("admin") ? "active" : ""}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setPage("admin-sales");
+                }}
+              >
+                ADMIN
+              </a>
+              <a
+                href="#"
+                className={page === "alerts" ? "active" : ""}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setDetailProduct(null);
+                  setCheckoutProduct(null);
+                  setPage("alerts");
+                }}
+              >
+                알림
               </a>
             </nav>
             <div className="actions">
@@ -108,6 +177,29 @@ function App() {
             onBack={() => setDetailProduct(null)}
             onBuy={() => setCheckoutProduct(detailProduct)}
           />
+        ) : page === "login" ? (
+          <LoginPage
+            onLogin={() => {
+              setIsLoggedIn(true);
+              setPage("home");
+            }}
+            onBack={() => setPage("home")}
+          />
+        ) : page === "mypage" ? (
+          <MyPage onBack={() => setPage("home")} />
+        ) : page === "products" ? (
+          <ProductsPage
+            favorites={favorites}
+            onToggleFavorite={toggleFavorite}
+            onOpenDetail={(p) => setDetailProduct(p)}
+          />
+        ) : page === "admin-sales" ? (
+          <SalesOverview
+            onBack={() => setPage("home")}
+            onGoDetail={() => setPage("admin-sales-detail")}
+          />
+        ) : page === "admin-sales-detail" ? (
+          <SalesDetail onBack={() => setPage("admin-sales")} />
         ) : page === "category" ? (
           <CategoryPage
             active={activeCategoryPage}
@@ -499,148 +591,6 @@ function CategoryPage({
   );
 }
 
-function ProductDetail({ product, onBack, onBuy }) {
-  const [tab, setTab] = useState("리뷰");
-  const [selectedColor, setSelectedColor] = useState("BLACK/WHITE");
-  const [selectedTone, setSelectedTone] = useState("White");
-  const [selectedSize, setSelectedSize] = useState("270");
-  const carted = false;
-  return (
-    <div className="container detail-page">
-      <button className="tab" onClick={onBack}>
-        ← 목록으로
-      </button>
-      <div className="detail-grid">
-        <div className="detail-media">
-          <img
-            src={product.image}
-            alt={product.name}
-            style={{ width: "100%", height: "auto" }}
-          />
-          <div className="thumb-row">
-            {detailGallery.map((g, i) => (
-              <img key={i} src={g} alt="thumb" />
-            ))}
-          </div>
-        </div>
-        <div className="detail-info">
-          <h2 className="detail-title">{product.name}</h2>
-          <div className="price" style={{ fontSize: 20 }}>
-            {product.price.toLocaleString()}원
-          </div>
-          <div className="meta-row" style={{ padding: 0 }}>
-            <span>관심 {product.likes ?? 0}</span>
-            <span>리뷰 {product.reviews ?? 0}</span>
-          </div>
-          <div className="spec-table">
-            <div>
-              <span className="k">제품코드</span>
-              <span className="v">SKU-{product.id}</span>
-            </div>
-            <div>
-              <span className="k">색상코드</span>
-              <span className="v">BW</span>
-            </div>
-          </div>
-          <div className="option-row">
-            <label>컬러</label>
-            <select
-              value={selectedColor}
-              onChange={(e) => setSelectedColor(e.target.value)}
-            >
-              <option>BLACK/WHITE</option>
-              <option>WHITE/BLACK</option>
-              <option>GRAY</option>
-            </select>
-          </div>
-          <div className="option-row">
-            <label>색상 선택</label>
-            <select
-              value={selectedTone}
-              onChange={(e) => setSelectedTone(e.target.value)}
-            >
-              <option>White</option>
-              <option>Black</option>
-              <option>Navy</option>
-              <option>Beige</option>
-              <option>Olive</option>
-            </select>
-          </div>
-          <div className="option-row">
-            <label>사이즈</label>
-            <select
-              value={selectedSize}
-              onChange={(e) => setSelectedSize(e.target.value)}
-            >
-              {["240", "250", "260", "270", "280", "290"].map((s) => (
-                <option key={s}>{s}</option>
-              ))}
-            </select>
-          </div>
-          <div className="btn-row">
-            <button className="tab" disabled={carted}>
-              장바구니 {carted ? "담김" : "담기"}
-            </button>
-            <button className="buy-btn" onClick={onBuy}>
-              결제하기
-            </button>
-          </div>
-        </div>
-      </div>
-      <div className="detail-tabs">
-        <div className="tabs">
-          <button
-            className={`tab${tab === "리뷰" ? " active" : ""}`}
-            onClick={() => setTab("리뷰")}
-          >
-            리뷰
-          </button>
-          <button
-            className={`tab${tab === "Q&A" ? " active" : ""}`}
-            onClick={() => setTab("Q&A")}
-          >
-            Q&A
-          </button>
-        </div>
-        {tab === "리뷰" ? (
-          <>
-            <div className="review-gallery">
-              {reviewPhotos.map((src, i) => (
-                <img key={i} src={src} alt="user" />
-              ))}
-            </div>
-            <ul className="review-list">
-              {mockReviews.map((r) => (
-                <li key={r.id} className="review-item">
-                  <div className="review-head">
-                    <span className="review-user">{r.userMasked}</span>
-                    <span className="review-stars">
-                      {"★".repeat(r.stars)}
-                      {"☆".repeat(5 - r.stars)}
-                    </span>
-                  </div>
-                  <div className="review-prod">{r.productName}</div>
-                  <div className="review-body">{r.text}</div>
-                </li>
-              ))}
-            </ul>
-          </>
-        ) : (
-          <div className="qa-box">
-            <textarea
-              className="review-text"
-              placeholder="상품에 대해 궁금한 점을 적어주세요"
-            />
-            <div style={{ textAlign: "right" }}>
-              <button className="tab">문의 등록</button>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
 function Checkout({ product, onBack }) {
   return (
     <div className="container checkout-page">
@@ -703,41 +653,6 @@ function Checkout({ product, onBack }) {
   );
 }
 
-// 목업 데이터: 상세 갤러리/리뷰 사진/리뷰 목록
-const detailGallery = [
-  "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80",
-];
-const reviewPhotos = [
-  "https://images.unsplash.com/photo-1545912452-8aea7e25a3d3?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1514996937319-344454492b37?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1549576490-b0b4831ef60a?auto=format&fit=crop&w=600&q=80",
-];
-const mockReviews = [
-  {
-    id: 1,
-    userMasked: "김*민",
-    productName: "러닝화 경량 모델",
-    stars: 5,
-    text: "가볍고 쿠션 좋아요.",
-  },
-  {
-    id: 2,
-    userMasked: "박*호",
-    productName: "아웃도어 트레일 자켓",
-    stars: 4,
-    text: "방풍 성능 만족합니다.",
-  },
-  {
-    id: 3,
-    userMasked: "이*지",
-    productName: "트레이닝 조거 팬츠",
-    stars: 5,
-    text: "핏이 예쁘고 편합니다.",
-  },
-];
 function CollectionTabs() {
   const groups = ["러닝", "트레이닝", "아웃도어"];
   const [active, setActive] = useState(groups[0]);
