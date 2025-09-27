@@ -7,7 +7,6 @@ const LoginPage = ({ onLogin, onBack }) => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    // 실제 로그인 로직은 여기에 구현
     onLogin();
   };
 
