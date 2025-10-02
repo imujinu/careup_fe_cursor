@@ -133,9 +133,7 @@ const ChatBot = ({ onClose }) => {
             </div>
             <div className="chatbot-title">
               <div className="chatbot-name">레이</div>
-              <div className="chatbot-subtitle">
-                궁금한 사항을 물어보세요!
-              </div>
+              <div className="chatbot-subtitle">궁금한 사항을 물어보세요!</div>
             </div>
           </div>
           <button className="chatbot-close" onClick={onClose}>
