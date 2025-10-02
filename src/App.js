@@ -6,6 +6,7 @@ import MyPage from "./components/MyPage";
 import ProductsPage from "./components/ProductsPage";
 import SalesOverview from "./components/admin/SalesOverview";
 import SalesDetail from "./components/admin/SalesDetail";
+import BackOffice from "./components/BackOffice";
 import { useMemo, useState, useEffect } from "react";
 
 function App() {
@@ -125,6 +126,16 @@ function App() {
               </a>
               <a
                 href="#"
+                className={page === "backoffice" ? "active" : ""}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setPage("backoffice");
+                }}
+              >
+                백오피스
+              </a>
+              <a
+                href="#"
                 className={page === "alerts" ? "active" : ""}
                 onClick={(e) => {
                   e.preventDefault();
@@ -200,6 +211,8 @@ function App() {
           />
         ) : page === "admin-sales-detail" ? (
           <SalesDetail onBack={() => setPage("admin-sales")} />
+        ) : page === "backoffice" ? (
+          <BackOffice onBack={() => setPage("home")} />
         ) : page === "category" ? (
           <CategoryPage
             active={activeCategoryPage}
